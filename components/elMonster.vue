@@ -1,6 +1,9 @@
 <template>
   <div style="border: 1px solid black; padding: 10px">
     <h3>Monster - {{ returnMonsterName }}</h3>
+    <div v-if="receivedDamage">
+      Received {{ receivedDamage }}
+    </div>
     <img :src="returnMonsterImage" alt="" width="100" height="100">
     <div>
       Level: {{ returnMonsterLevel }}
@@ -33,6 +36,11 @@ export default {
     monster: {
       type: Object,
       default: () => ({}),
+      required: true
+    },
+    receivedDamage: {
+      type: Number,
+      default: 0,
       required: true
     }
   }

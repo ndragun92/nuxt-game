@@ -1,6 +1,9 @@
 <template>
   <div style="border: 1px solid black; padding: 10px">
     <h3>Character</h3>
+    <div v-if="receivedDamage">
+      Received {{ receivedDamage }}
+    </div>
     <div>
       <span @click="character.stats.STR += 1">STR - {{ returnCharacterStats.STR }}</span>
       <span @click="character.stats.DEX += 1">DEX - {{ returnCharacterStats.DEX }}</span>
@@ -50,7 +53,13 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    receivedDamage: {
+      type: Number,
+      default: 0,
+      required: true
     }
+
   }
 }
 </script>

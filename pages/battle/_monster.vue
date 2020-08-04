@@ -1,11 +1,15 @@
 <template>
   <div v-if="!$fetchState.pending">
-    <el-monster :monster="returnMonster" />
-    <el-character :character="returnCharacter" :experience-table="experienceTable" />
+    <el-monster
+      :monster="returnMonster"
+      :received-damage="lastDealtDamageByCharacter"
+    />
+    <el-character
+      :character="returnCharacter"
+      :experience-table="experienceTable"
+      :received-damage="lastDealtDamageByMonster"
+    />
     <hr>
-    <button v-if="returnMonsterHP" type="button" @click="dealDamageToMonster(randomCharacterDamage())">
-      Did deal {{ lastDealtDamage.toFixed(2) }} damage
-    </button>
     <button v-if="!returnMonsterHP" type="button" @click="revive()">
       Revive Boss
     </button>
@@ -17,7 +21,7 @@
     </button>
     <div>
       <ul>
-        <li v-for="(text, index) in battleLog" :key="index">
+        <li v-for="(text, index) in returnBattleLog" :key="index">
           {{ text }}
         </li>
       </ul>
@@ -42,21 +46,28 @@ export default {
   data: () => ({
     monster: {},
     character: {},
-    lastDealtDamage: 0,
+    lastDealtDamageByCharacter: 0,
+    lastDealtDamageByMonster: 0,
     battleLog: [],
     experienceTable: [],
     availableExperienceToEarn: 0
   }),
+  computed: {
+    returnBattleLog () {
+      return [...this.battleLog].reverse()
+    }
+  },
   methods: {
     dealDamageToMonster (damage) {
-      this.lastDealtDamage = damage
-      const experienceToEarn = this.lastDealtDamage * (this.returnMonsterExperience / this.returnMonsterHPTotal)
-      if (this.lastDealtDamage > this.returnMonsterHP) {
+      this.lastDealtDamageByMonster = 0
+      this.lastDealtDamageByCharacter = damage
+      const experienceToEarn = this.lastDealtDamageByCharacter * (this.returnMonsterExperience / this.returnMonsterHPTotal)
+      if (this.lastDealtDamageByCharacter > this.returnMonsterHP) {
         this.monster.HP.current = 0
       } else {
-        this.monster.HP.current -= this.lastDealtDamage
+        this.monster.HP.current -= this.lastDealtDamageByCharacter
       }
-      if (!this.lastDealtDamage) {
+      if (!this.lastDealtDamageByCharacter) {
         this.battleLog.push('Missed monster while trying to hit')
       } else {
         console.log('availableExperienceToEarn', this.availableExperienceToEarn)
@@ -68,7 +79,7 @@ export default {
           }
           this.availableExperienceToEarn -= experienceToEarn
         }
-        this.battleLog.push(`Dealt ${this.lastDealtDamage.toFixed(2)} damage to monster + earned ${experienceToEarn.toFixed(2)} experience`)
+        this.battleLog.push(`Dealt ${this.lastDealtDamageByCharacter.toFixed(2)} damage to monster + earned ${experienceToEarn.toFixed(2)} experience`)
       }
       if (!this.returnMonsterHP) {
         this.battleLog.push('Successfully killed monster!')
@@ -80,16 +91,17 @@ export default {
       }
     },
     dealDamageToCharacter (damage) {
-      this.lastDealtDamage = damage
-      if (this.lastDealtDamage > this.returnCharacterHP) {
+      this.lastDealtDamageByCharacter = 0
+      this.lastDealtDamageByMonster = damage
+      if (this.lastDealtDamageByMonster > this.returnCharacterHP) {
         this.character.HP.current = 0
       } else {
-        this.character.HP.current -= this.lastDealtDamage
+        this.character.HP.current -= this.lastDealtDamageByMonster
       }
-      if (!this.lastDealtDamage) {
+      if (!this.lastDealtDamageByMonster) {
         this.battleLog.push('Missed character while trying to hit')
       } else {
-        this.battleLog.push(`Monster dealt ${this.lastDealtDamage.toFixed(2)} damage to character!`)
+        this.battleLog.push(`Monster dealt ${this.lastDealtDamageByMonster.toFixed(2)} damage to character!`)
       }
       if (!this.returnCharacterHP) {
         this.battleLog.push('Successfully killed character!')
@@ -118,34 +130,24 @@ export default {
       console.log('randomCharacterDamage', this.randomCharacterDamage())
     },
     startBattle (characterSpeed = this.returnCharacter.speed, monsterSpeed = this.returnMonster.speed) {
-      if (this.returnCharacterHP <= 0 || this.returnMonsterHP <= 0) {
-        console.log('One of characters got killed')
-        if (this.returnCharacterHP <= 0) {
-          alert('Game over')
-        } else {
-          alert('Victory!')
-        }
-        return false
-      }
-      if (characterSpeed <= 0 && monsterSpeed <= 0) {
-        console.log('START OVER')
-        this.startBattle()
-        return false
+      if (this.returnCharacterHP <= 0) {
+        return alert('Game over')
+      } else if (this.returnMonsterHP <= 0) {
+        return alert('Victory!')
+      } else if (characterSpeed <= 0 && monsterSpeed <= 0) {
+        return this.startBattle()
       } else {
         const minSpeed = this.returnCharacter.speed < this.returnMonster.speed ? this.returnCharacter.speed : this.returnMonster.speed
         if (characterSpeed > monsterSpeed) {
-          console.log('character turn')
           this.dealDamageToMonster(this.randomCharacterDamage())
           characterSpeed -= minSpeed
         } else {
-          console.log('monster turn')
           this.dealDamageToCharacter(this.randomMonsterDamage())
           monsterSpeed -= minSpeed
         }
-        console.log('startBattle', { characterSpeed, monsterSpeed, minSpeed, old: this.returnCharacter.speed })
         setTimeout(() => {
           this.startBattle(characterSpeed, monsterSpeed)
-        }, 100)
+        }, 1000)
       }
     }
   }
