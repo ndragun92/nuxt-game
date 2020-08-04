@@ -13,8 +13,11 @@
     <button v-if="!returnMonsterHP" type="button" @click="revive()">
       Revive Boss
     </button>
-    <button type="button" @click="testDamage()">
-      testDamage
+    <button type="button" @click="autoAttack = !autoAttack">
+      Auto-attack - {{ autoAttack ? 'on': 'off' }}
+    </button>
+    <button v-if="characterTurn" type="button" @click="basicAttack()">
+      basicAttack
     </button>
     <button type="button" @click="startBattle()">
       battle
@@ -50,7 +53,10 @@ export default {
     lastDealtDamageByMonster: 0,
     battleLog: [],
     experienceTable: [],
-    availableExperienceToEarn: 0
+    availableExperienceToEarn: 0,
+    characterTurn: false,
+    autoAttack: false,
+    saveTempSpeed: null
   }),
   computed: {
     returnBattleLog () {
@@ -129,7 +135,13 @@ export default {
     testDamage () {
       console.log('randomCharacterDamage', this.randomCharacterDamage())
     },
+    basicAttack () {
+      const { characterSpeed, monsterSpeed } = this.saveTempSpeed
+      this.dealDamageToMonster(this.randomCharacterDamage())
+      this.startBattle(characterSpeed, monsterSpeed)
+    },
     startBattle (characterSpeed = this.returnCharacter.speed, monsterSpeed = this.returnMonster.speed) {
+      this.characterTurn = false
       if (this.returnCharacterHP <= 0) {
         return alert('Game over')
       } else if (this.returnMonsterHP <= 0) {
@@ -139,15 +151,24 @@ export default {
       } else {
         const minSpeed = this.returnCharacter.speed < this.returnMonster.speed ? this.returnCharacter.speed : this.returnMonster.speed
         if (characterSpeed > monsterSpeed) {
-          this.dealDamageToMonster(this.randomCharacterDamage())
+          // this.dealDamageToMonster(this.randomCharacterDamage())
           characterSpeed -= minSpeed
+          if (this.autoAttack) {
+            this.dealDamageToMonster(this.randomCharacterDamage())
+            setTimeout(() => {
+              this.startBattle(characterSpeed, monsterSpeed)
+            }, 1000)
+          } else {
+            this.saveTempSpeed = { characterSpeed, monsterSpeed }
+            this.characterTurn = true
+          }
         } else {
           this.dealDamageToCharacter(this.randomMonsterDamage())
           monsterSpeed -= minSpeed
+          setTimeout(() => {
+            this.startBattle(characterSpeed, monsterSpeed)
+          }, 1000)
         }
-        setTimeout(() => {
-          this.startBattle(characterSpeed, monsterSpeed)
-        }, 1000)
       }
     }
   }
