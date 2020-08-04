@@ -17,6 +17,17 @@
       Defense: {{ returnCharacterDefense }}
     </div>
     <div>
+      Total HP: {{ returnCharacterHPTotal }}
+    </div>
+    <div>
+      Current HP: {{ returnCharacterHP.toFixed(2) }}
+    </div>
+    <div>
+      <progress :value="returnCharacterHP" :max="returnCharacterHPTotal">
+        {{ returnCharacterHPPercentage }}%
+      </progress>
+    </div>
+    <div>
       Experience: {{ returnCharacterExperience.toFixed(2) }}
       <progress :value="returnCharacterExperience" :max="returnNextLevelExperience">
         {{ returnCharacterExperiencePercent }}%

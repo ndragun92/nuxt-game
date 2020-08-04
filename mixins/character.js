@@ -6,6 +6,15 @@ export default {
     returnCharacterExperience () {
       return this.returnCharacter.experience
     },
+    returnCharacterHP () {
+      return this.returnCharacter.HP.current
+    },
+    returnCharacterHPTotal () {
+      return this.returnCharacter.HP.total
+    },
+    returnCharacterHPPercentage () {
+      return (this.returnCharacterHP * 100 / this.returnCharacterHPTotal).toFixed(2)
+    },
     returnCharacterStats () {
       return this.returnCharacter.stats
     },

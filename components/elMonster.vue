@@ -6,13 +6,16 @@
       Level: {{ returnMonsterLevel }}
     </div>
     <div>
+      Attack: {{ returnMonsterAttack }}
+    </div>
+    <div>
       Defense: {{ returnMonsterDefense }}
     </div>
     <div>
-      Total Monster HP: {{ returnMonsterHPTotal }}
+      Total HP: {{ returnMonsterHPTotal }}
     </div>
     <div>
-      Current Monster HP: {{ returnMonsterHP.toFixed(2) }}
+      Current HP: {{ returnMonsterHP.toFixed(2) }}
     </div>
     <div>
       <progress :value="returnMonsterHP" :max="returnMonsterHPTotal">

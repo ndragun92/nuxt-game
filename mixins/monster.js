@@ -15,6 +15,10 @@ export default {
     returnMonsterExperience () {
       return this.returnMonster.experience
     },
+    returnMonsterAttack () {
+      if (this.returnMonsterLevel === 1) { return this.returnMonster.attack }
+      return this.returnMonster.attack + (this.returnMonsterLevel / 100 * this.returnMonster.attack)// Max monster level is 100
+    },
     returnMonsterDefense () {
       if (this.returnMonsterLevel === 1) { return this.returnMonster.defense }
       return this.returnMonster.defense + (this.returnMonsterLevel / 100 * this.returnMonster.defense)// Max monster level is 100
