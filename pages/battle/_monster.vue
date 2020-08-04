@@ -19,8 +19,8 @@
     <button v-if="characterTurn" type="button" @click="basicAttack()">
       basicAttack
     </button>
-    <button type="button" @click="startBattle()">
-      battle
+    <button v-if="!battleStart" type="button" @click="startBattle()">
+      Start battle
     </button>
     <div>
       <ul>
@@ -47,6 +47,7 @@ export default {
     this.availableExperienceToEarn = this.returnMonsterExperience
   },
   data: () => ({
+    battleStart: false,
     monster: {},
     character: {},
     lastDealtDamageByCharacter: 0,
@@ -141,6 +142,9 @@ export default {
       this.startBattle(characterSpeed, monsterSpeed)
     },
     startBattle (characterSpeed = this.returnCharacter.speed, monsterSpeed = this.returnMonster.speed) {
+      if (!this.battleStart) {
+        this.battleStart = true
+      }
       this.characterTurn = false
       if (this.returnCharacterHP <= 0) {
         return alert('Game over')
