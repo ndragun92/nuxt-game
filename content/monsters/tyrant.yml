@@ -1,0 +1,8 @@
+name: Tyrant
+image: https://gamepedia.cursecdn.com/cabal_gamepedia/thumb/4/43/Ft2_tyrant.jpg/300px-Ft2_tyrant.jpg?version=f66a9686947856288a1aee3de282b483
+level: 10
+experience: 100
+defense: 100
+HP:
+  total: 15000
+  current: 15000
