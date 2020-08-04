@@ -27,7 +27,7 @@
     <div>
       <ul>
         <li v-for="(text, index) in returnBattleLog" :key="index">
-          {{ text }}
+          <span v-html="text" />
         </li>
       </ul>
     </div>
@@ -79,9 +79,8 @@ export default {
         this.monster.HP.current -= this.lastDealtDamageByCharacter
       }
       if (!this.lastDealtDamageByCharacter) {
-        this.battleLog.push('Missed monster while trying to hit')
+        this.battleLog.push('<em>Missed monster while trying to hit</em>')
       } else {
-        console.log('availableExperienceToEarn', this.availableExperienceToEarn)
         if (this.availableExperienceToEarn > 0) {
           if (experienceToEarn > this.availableExperienceToEarn) {
             this.character.experience += this.availableExperienceToEarn
@@ -90,15 +89,15 @@ export default {
           }
           this.availableExperienceToEarn -= experienceToEarn
         }
-        this.battleLog.push(`Dealt ${criticalHit ? 'CRITICAL DAMAGE' : ''} ${this.lastDealtDamageByCharacter.toFixed(2)} damage to monster + earned ${experienceToEarn.toFixed(2)} experience`)
+        if (criticalHit) {
+          this.battleLog.push(`<strong>CHARACTER</strong>: <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+        } else {
+          this.battleLog.push(`<strong>CHARACTER</strong>: Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+        }
+        this.battleLog.push(`<strong>CHARACTER</strong>: Earned ${experienceToEarn.toFixed(2)} experience by this hit!`)
       }
       if (!this.returnMonsterHP) {
-        this.battleLog.push('Successfully killed monster!')
-        // this.monster.level += 1
-        this.battleLog.push('Moving to next monster!')
-        // alert('You successfully killed monster')
-        // this.$router.push('/')
-        // return this.revive()
+        this.battleLog.push('<strong>Successfully killed monster!</strong>')
       }
     },
     dealDamageToCharacter ({ damage, criticalHit }) {
@@ -111,12 +110,14 @@ export default {
         this.character.HP.current -= this.lastDealtDamageByMonster
       }
       if (!this.lastDealtDamageByMonster) {
-        this.battleLog.push('Missed character while trying to hit')
+        this.battleLog.push('<em>Missed character while trying to hit</em>')
+      } else if (criticalHit) {
+        this.battleLog.push(`<strong>MONSTER</strong>: <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
       } else {
-        this.battleLog.push(`Monster dealt ${criticalHit ? 'CRITICAL DAMAGE' : ''} ${this.lastDealtDamageByMonster.toFixed(2)} damage to character!`)
+        this.battleLog.push(`<strong>MONSTER</strong>: Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
       }
       if (!this.returnCharacterHP) {
-        this.battleLog.push('Successfully killed character!')
+        this.battleLog.push('<strong>Successfully killed character!</strong>')
       }
     },
     revive () {

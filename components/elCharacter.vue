@@ -1,8 +1,8 @@
 <template>
   <div style="border: 1px solid black; padding: 10px">
     <h3>Character</h3>
-    <div v-if="receivedDamage">
-      Received {{ receivedDamage }} - {{ criticalHit }}
+    <div v-if="receivedDamage" class="damage" :class="{critical: criticalHit}">
+      {{ receivedDamage.toFixed() }}
     </div>
     <div>
       <span @click="character.stats.STR += 1">STR - {{ returnCharacterStats.STR }}</span>
@@ -67,3 +67,21 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.fire-text {
+  text-align: center;
+  font-size: 120px;
+  color: #fff;
+  text-shadow: 0 0 20px #fefcc9, 10px -10px 30px #feec85, -20px -20px 40px #ffae34, 20px -40px 50px #ec760c, -20px -60px 60px #cd4606, 0 -80px 70px #973716, 10px -90px 80px #451b0e;
+}
+.damage {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.damage.critical {
+  font-weight: 800;
+  color: orangered;
+}
+</style>
