@@ -2,7 +2,7 @@
   <div style="border: 1px solid black; padding: 10px">
     <h3>Monster - {{ returnMonsterName }}</h3>
     <div v-if="receivedDamage">
-      Received {{ receivedDamage }}
+      Received {{ receivedDamage }} - {{ criticalHit }}
     </div>
     <img :src="returnMonsterImage" alt="" width="100" height="100">
     <div>
@@ -41,6 +41,11 @@ export default {
     receivedDamage: {
       type: Number,
       default: 0,
+      required: true
+    },
+    criticalHit: {
+      type: Boolean,
+      default: false,
       required: true
     }
   }

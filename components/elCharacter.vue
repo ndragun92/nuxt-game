@@ -2,7 +2,7 @@
   <div style="border: 1px solid black; padding: 10px">
     <h3>Character</h3>
     <div v-if="receivedDamage">
-      Received {{ receivedDamage }}
+      Received {{ receivedDamage }} - {{ criticalHit }}
     </div>
     <div>
       <span @click="character.stats.STR += 1">STR - {{ returnCharacterStats.STR }}</span>
@@ -58,8 +58,12 @@ export default {
       type: Number,
       default: 0,
       required: true
+    },
+    criticalHit: {
+      type: Boolean,
+      default: false,
+      required: true
     }
-
   }
 }
 </script>

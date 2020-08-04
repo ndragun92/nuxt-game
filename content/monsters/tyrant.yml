@@ -8,3 +8,6 @@ speed: 150
 HP:
   total: 1500
   current: 1500
+critical:
+  rate: 50
+  DMG: 200

@@ -8,3 +8,6 @@ speed: 120
 HP:
   total: 1000
   current: 1000
+critical:
+  rate: 50
+  DMG: 200

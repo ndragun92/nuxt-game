@@ -3,11 +3,13 @@
     <el-monster
       :monster="returnMonster"
       :received-damage="lastDealtDamageByCharacter"
+      :critical-hit="lastDealtDamageCriticalHit"
     />
     <el-character
       :character="returnCharacter"
       :experience-table="experienceTable"
       :received-damage="lastDealtDamageByMonster"
+      :critical-hit="lastDealtDamageCriticalHit"
     />
     <hr>
     <button v-if="!returnMonsterHP" type="button" @click="revive()">
@@ -52,6 +54,7 @@ export default {
     character: {},
     lastDealtDamageByCharacter: 0,
     lastDealtDamageByMonster: 0,
+    lastDealtDamageCriticalHit: false,
     battleLog: [],
     experienceTable: [],
     availableExperienceToEarn: 0,
@@ -67,6 +70,7 @@ export default {
   methods: {
     dealDamageToMonster ({ damage, criticalHit }) {
       this.lastDealtDamageByMonster = 0
+      this.lastDealtDamageCriticalHit = criticalHit
       this.lastDealtDamageByCharacter = damage
       const experienceToEarn = this.lastDealtDamageByCharacter * (this.returnMonsterExperience / this.returnMonsterHPTotal)
       if (this.lastDealtDamageByCharacter > this.returnMonsterHP) {
@@ -97,8 +101,9 @@ export default {
         // return this.revive()
       }
     },
-    dealDamageToCharacter (damage) {
+    dealDamageToCharacter ({ damage, criticalHit }) {
       this.lastDealtDamageByCharacter = 0
+      this.lastDealtDamageCriticalHit = criticalHit
       this.lastDealtDamageByMonster = damage
       if (this.lastDealtDamageByMonster > this.returnCharacterHP) {
         this.character.HP.current = 0
@@ -108,7 +113,7 @@ export default {
       if (!this.lastDealtDamageByMonster) {
         this.battleLog.push('Missed character while trying to hit')
       } else {
-        this.battleLog.push(`Monster dealt ${this.lastDealtDamageByMonster.toFixed(2)} damage to character!`)
+        this.battleLog.push(`Monster dealt ${criticalHit ? 'CRITICAL DAMAGE' : ''} ${this.lastDealtDamageByMonster.toFixed(2)} damage to character!`)
       }
       if (!this.returnCharacterHP) {
         this.battleLog.push('Successfully killed character!')
@@ -137,8 +142,15 @@ export default {
       // const maxDmg = maxAttack * this.returnCharacterLevel
       const minDmg = this.returnMonsterAttack / 1.5
       const maxDmg = this.returnMonsterAttack
-      const finalDmg = Math.floor(Math.random() * (minDmg - maxDmg)) + minDmg
-      return finalDmg * (100 / (100 + this.returnCharacterDefense))
+      let finalDmg = Math.floor(Math.random() * (minDmg - maxDmg)) + minDmg
+      const criticalHit = (Math.random() < this.returnMonsterCriticalRate / 100)
+      if (criticalHit) {
+        finalDmg = finalDmg + (finalDmg * this.returnMonsterCriticalDMG / 100)
+      }
+      return {
+        damage: finalDmg * (100 / (100 + this.returnCharacterDefense)),
+        criticalHit
+      }
     },
     testDamage () {
       console.log('randomCharacterDamage', this.randomCharacterDamage())

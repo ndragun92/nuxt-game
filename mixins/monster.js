@@ -23,6 +23,12 @@ export default {
       if (this.returnMonsterLevel === 1) { return this.returnMonster.defense }
       return this.returnMonster.defense + (this.returnMonsterLevel / 100 * this.returnMonster.defense)// Max monster level is 100
     },
+    returnMonsterCriticalRate () {
+      return this.returnMonster.critical.rate
+    },
+    returnMonsterCriticalDMG () {
+      return this.returnMonster.critical.DMG
+    },
     returnMonsterHP () {
       return this.returnMonster.HP.current
     },
