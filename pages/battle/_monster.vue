@@ -65,7 +65,7 @@ export default {
     }
   },
   methods: {
-    dealDamageToMonster (damage) {
+    dealDamageToMonster ({ damage, criticalHit }) {
       this.lastDealtDamageByMonster = 0
       this.lastDealtDamageByCharacter = damage
       const experienceToEarn = this.lastDealtDamageByCharacter * (this.returnMonsterExperience / this.returnMonsterHPTotal)
@@ -86,7 +86,7 @@ export default {
           }
           this.availableExperienceToEarn -= experienceToEarn
         }
-        this.battleLog.push(`Dealt ${this.lastDealtDamageByCharacter.toFixed(2)} damage to monster + earned ${experienceToEarn.toFixed(2)} experience`)
+        this.battleLog.push(`Dealt ${criticalHit ? 'CRITICAL DAMAGE' : ''} ${this.lastDealtDamageByCharacter.toFixed(2)} damage to monster + earned ${experienceToEarn.toFixed(2)} experience`)
       }
       if (!this.returnMonsterHP) {
         this.battleLog.push('Successfully killed monster!')
@@ -122,8 +122,15 @@ export default {
       // const maxDmg = maxAttack * this.returnCharacterLevel
       const minDmg = this.returnCharacterAttack / 1.5
       const maxDmg = this.returnCharacterAttack
-      const finalDmg = Math.floor(Math.random() * (minDmg - maxDmg)) + minDmg
-      return finalDmg * (100 / (100 + this.returnMonsterDefense))
+      let finalDmg = Math.floor(Math.random() * (minDmg - maxDmg)) + minDmg
+      const criticalHit = (Math.random() < this.returnCharacterCriticalRate / 100)
+      if (criticalHit) {
+        finalDmg = finalDmg + (finalDmg * this.returnCharacterCriticalDMG / 100)
+      }
+      return {
+        damage: finalDmg * (100 / (100 + this.returnMonsterDefense)),
+        criticalHit
+      }
     },
     randomMonsterDamage () {
       // const minDmg = minAttack * this.returnCharacterLevel

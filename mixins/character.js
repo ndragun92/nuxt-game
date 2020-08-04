@@ -26,6 +26,12 @@ export default {
       const { STR, DEX, INT } = this.returnCharacterStats
       return (STR * 7) + (DEX * 5) + (INT * 2)
     },
+    returnCharacterCriticalRate () {
+      return this.returnCharacter.critical.rate
+    },
+    returnCharacterCriticalDMG () {
+      return this.returnCharacter.critical.DMG
+    },
     returnCharacterLevel () {
       return [...this.experienceTable].reverse().find(obj => obj.experience <= this.returnCharacterExperience).level
     },

@@ -10,3 +10,6 @@ stats:
 HP:
   total: 2000
   current: 2000
+critical:
+  rate: 50
+  DMG: 200
