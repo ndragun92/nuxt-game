@@ -2,9 +2,15 @@ import skills from './skills'
 
 export default {
   mixins: [skills],
+  data: () => ({
+    showCharacterInfo: false
+  }),
   computed: {
     returnCharacter () {
       return this.character
+    },
+    returnCharacterName () {
+      return this.character.name
     },
     returnCharacterExperience () {
       return this.returnCharacter.experience

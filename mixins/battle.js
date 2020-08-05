@@ -23,19 +23,23 @@ export default {
       }
       // Reset character turn and set it to false unless we trigger that character has a turn
       this.characterTurn = false
+      const minSpeed = this.returnCharacter.speed <= this.returnMonster.speed ? this.returnCharacter.speed : this.returnMonster.speed
+      console.log('DEBUG SPEED', { characterSpeed, monsterSpeed })
       // If character HP is equal or lower then 0 return GAME OVER
       if (this.returnCharacterHP <= 0) {
+        this.battleStart = false
         return alert('Game over')
         // If monster HP is equal or lower then 0 return VICTORY
       } else if (this.returnMonsterHP <= 0) {
+        this.battleStart = false
         return alert('Victory!')
         // If character speed or monster speed is equal or lower then 0 run start battle from beginning and reset speed to initial speed
-      } else if (characterSpeed <= 0 && monsterSpeed <= 0) {
+      } else if ((characterSpeed <= 0 && monsterSpeed <= 0) || (characterSpeed < minSpeed && monsterSpeed < minSpeed)) {
         return this.startBattle()
       } else {
         // Get minimum speed [Check if character or monster has lower speed and set as minSpeed]
-        const minSpeed = this.returnCharacter.speed < this.returnMonster.speed ? this.returnCharacter.speed : this.returnMonster.speed
         // If character speed is greater then monster speed character is first to attack
+        console.log('DEBUG ALL', { minSpeed, characterSpeed, monsterSpeed })
         if (characterSpeed > monsterSpeed) {
           // Before attack reduce character speed by minimum speed
           characterSpeed -= minSpeed
@@ -46,15 +50,17 @@ export default {
             // Start next turn after 1 second
             setTimeout(() => {
               this.startBattle(characterSpeed, monsterSpeed)
-            }, 1000)
+            }, 2000)
           } else {
             // If auto-attack is disabled set character turn and manually select skill to attack monster
             this.saveTempSpeed = { characterSpeed, monsterSpeed }
             this.characterTurn = true
           }
-          // If special skill was used. Reduce cool-down of special attack on each character turn
-          if (this.specialAttackCooldown > 0) {
-            this.specialAttackCooldown -= 1
+          // CHANGE COOLODOWN OF USED SKILLS
+          for (const [key, value] of Object.entries(this.skillCooldown)) {
+            if (value > 0) {
+              this.skillCooldown[key] -= 1
+            }
           }
         } else {
           // If monster speed is greater then character speed monster will attack character
@@ -65,11 +71,11 @@ export default {
           // Start next turn after 1 second
           setTimeout(() => {
             this.startBattle(characterSpeed, monsterSpeed)
-          }, 1000)
+          }, 2000)
         }
       }
     },
-    dealDamageToMonster ({ damage, criticalHit }) {
+    dealDamageToMonster ({ damage, criticalHit, skill }) {
       // When dealing damage to monster reset monster lastDealtDamage to 0
       this.lastDealtDamageByMonster = 0
       // Store criticalHit inside value to display criticalHit animation
@@ -104,9 +110,9 @@ export default {
         }
         // Check if character made critical hit and display appropriate message based on condition
         if (criticalHit) {
-          this.battleLog.push(`<strong>CHARACTER</strong>: <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+          this.battleLog.push(`<strong>CHARACTER</strong>: [Skill: ${skill}] <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
         } else {
-          this.battleLog.push(`<strong>CHARACTER</strong>: Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+          this.battleLog.push(`<strong>CHARACTER</strong>: [Skill: ${skill}] Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
         }
         this.battleLog.push(`<strong>CHARACTER</strong>: Earned ${experienceToEarn.toFixed(2)} experience by this hit!`)
       }
@@ -147,7 +153,7 @@ export default {
       // Revive monster and set his HP to max
       this.monster.HP.current = this.monster.HP.total
     },
-    randomCharacterDamage (skillDMG) {
+    randomCharacterDamage (skill) {
       const minDmg = this.returnCharacterAttack / 1.5 // Set min DMG
       const maxDmg = this.returnCharacterAttack // Set max DMG
       // Calculate finalDMG based on min and max DMG
@@ -159,13 +165,18 @@ export default {
         finalDmg = finalDmg + (finalDmg * this.returnCharacterCriticalDMG / 100)
       }
       // If character used skill then increase final DMG by skill DMG
-      if (skillDMG) {
-        finalDmg += skillDMG
+      if (skill) {
+        finalDmg += finalDmg + (finalDmg * skill.amp / 100)
+        finalDmg += skill.attack
+        Object.assign(this.skillCooldown, {
+          [skill.skill]: skill.cooldown + 1
+        })
       }
       // Return damage and state of critical hit
       return {
         damage: finalDmg * (100 / (100 + this.returnMonsterDefense)),
-        criticalHit
+        criticalHit,
+        skill: skill ? skill.name : 'Basic attack'
       }
     },
     randomMonsterDamage () {

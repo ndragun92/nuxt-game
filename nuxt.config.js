@@ -22,13 +22,22 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // Docs: https://material.io/resources/icons/?style=baseline
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+        async: true,
+        defer: true
+      }
     ]
   },
   /*
   ** Global CSS
   */
   css: [
+    { src: '@/assets/icomoon/_icomoon.scss', lang: 'scss' },
+    { src: '@/assets/styles/global.scss', lang: 'scss' }
   ],
   /*
   ** Plugins to load before mounting the App
@@ -56,8 +65,27 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt/content
-    '@nuxt/content'
+    '@nuxt/content',
+    // Doc: https://www.npmjs.com/package/@nuxtjs/style-resources
+    '@nuxtjs/style-resources',
+    // Doc: https://www.npmjs.com/package/nuxt-webfontloader
+    'nuxt-webfontloader'
   ],
+  webfontloader: {
+    google: {
+      families: [
+        'Roboto:300,400,500,700,900&display=swap'
+      ]
+    }
+  },
+  styleResources: {
+    scss: [
+      '@/assets/styles/variables/_fonts.scss',
+      '@/assets/styles/variables/_colors.scss',
+      '@/assets/styles/variables/_zIndex.scss',
+      '@/assets/styles/variables/_mixins.scss'
+    ]
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
