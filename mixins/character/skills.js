@@ -1,20 +1,45 @@
 export default {
   data: () => ({
-    skillCooldown: { },
     skills: [
       {
-        name: 'Force Stab',
-        skill: 'force_stab',
+        name: 'Basic attack',
+        skill: 'basic_attack',
+        type: 'attack',
         amp: 5,
-        attack: 34,
+        attack: 64,
+        cooldown: 0
+      },
+      {
+        name: 'Blade Cry',
+        skill: 'blade_cry',
+        type: 'attack',
+        amp: 55,
+        attack: 938,
         cooldown: 3
       },
       {
-        name: 'Assassinate',
-        skill: 'assassinate',
+        name: 'Blade Scud',
+        skill: 'blade_scud',
+        type: 'attack',
         amp: 61,
-        attack: 1617,
+        attack: 1586,
+        cooldown: 5
+      },
+      {
+        name: 'Lightning Slash',
+        skill: 'lightning_slash',
+        type: 'attack',
+        amp: 66,
+        attack: 2015,
         cooldown: 7
+      },
+      {
+        name: 'Death Tempest',
+        skill: 'death_tempest',
+        type: 'attack',
+        amp: 75,
+        attack: 2288,
+        cooldown: 9
       }
     ]
   }),
@@ -27,7 +52,6 @@ export default {
     skillAttack (skillName) {
       const { characterSpeed, monsterSpeed } = this.saveTempSpeed
       const skill = this.skills.find(obj => obj.skill === skillName)
-      console.log('CAN USE SKILL?', this.canUseSkill(skillName))
       if (this.canUseSkill(skillName)) {
         alert(`Used: ${skill.name}`)
         this.dealDamageToMonster(this.randomCharacterDamage(skill))
@@ -45,8 +69,11 @@ export default {
     },
     canUseSkill (skillName) {
       const skill = this.skillCooldown[skillName]
-      console.log('check skill', skill)
       if (!skill) { return true } else { return !skill }
+    },
+    returnSkillCooldownPercent (skill) {
+      const { skillCooldown, cooldown } = this.returnSkillData(skill)
+      return cooldown / skillCooldown * 100
     }
   }
 }

@@ -7,7 +7,9 @@ export default {
     lastDealtDamageByCharacter: 0, // Last damage that character did to monster
     lastDealtDamageCriticalHit: false, // Triggers if last hit by character or monster was critical hit
     saveTempSpeed: null, // Save speed value for next turn
-    autoAttack: false // State of character attack auto/manual
+    autoAttack: false, // State of character attack auto/manual
+    battleSpeed: 1000, // Game speed 1 second/turn
+    skillCooldown: {}
   }),
   computed: {
     returnBattleLog () {
@@ -36,43 +38,41 @@ export default {
         // If character speed or monster speed is equal or lower then 0 run start battle from beginning and reset speed to initial speed
       } else if ((characterSpeed <= 0 && monsterSpeed <= 0) || (characterSpeed < minSpeed && monsterSpeed < minSpeed)) {
         return this.startBattle()
-      } else {
         // Get minimum speed [Check if character or monster has lower speed and set as minSpeed]
         // If character speed is greater then monster speed character is first to attack
-        console.log('DEBUG ALL', { minSpeed, characterSpeed, monsterSpeed })
-        if (characterSpeed > monsterSpeed) {
-          // Before attack reduce character speed by minimum speed
-          characterSpeed -= minSpeed
-          // If auto-attack is enabled automatically attack monster
-          if (this.autoAttack) {
-            // Deal damage to monster
-            this.dealDamageToMonster(this.randomCharacterDamage())
-            // Start next turn after 1 second
-            setTimeout(() => {
-              this.startBattle(characterSpeed, monsterSpeed)
-            }, 2000)
-          } else {
-            // If auto-attack is disabled set character turn and manually select skill to attack monster
-            this.saveTempSpeed = { characterSpeed, monsterSpeed }
-            this.characterTurn = true
-          }
-          // CHANGE COOLODOWN OF USED SKILLS
-          for (const [key, value] of Object.entries(this.skillCooldown)) {
-            if (value > 0) {
-              this.skillCooldown[key] -= 1
-            }
-          }
-        } else {
-          // If monster speed is greater then character speed monster will attack character
-          // Deal damage to character
-          this.dealDamageToCharacter(this.randomMonsterDamage())
-          // Before attack reduce monster speed by minimum speed
-          monsterSpeed -= minSpeed
+      } else if (characterSpeed > monsterSpeed) {
+        // Before attack reduce character speed by minimum speed
+        characterSpeed -= minSpeed
+        // If auto-attack is enabled automatically attack monster
+        if (this.autoAttack) {
+          // Deal damage to monster
+          const basicSkillAttack = this.skills.find(obj => obj.skill === 'basic_attack')
+          this.dealDamageToMonster(this.randomCharacterDamage(basicSkillAttack))
           // Start next turn after 1 second
           setTimeout(() => {
             this.startBattle(characterSpeed, monsterSpeed)
-          }, 2000)
+          }, this.battleSpeed)
+        } else {
+          // If auto-attack is disabled set character turn and manually select skill to attack monster
+          this.saveTempSpeed = { characterSpeed, monsterSpeed }
+          this.characterTurn = true
         }
+        // CHANGE COOLODOWN OF USED SKILLS
+        for (const [key, value] of Object.entries(this.skillCooldown)) {
+          if (value > 0) {
+            this.skillCooldown[key] -= 1
+          }
+        }
+      } else {
+        // If monster speed is greater then character speed monster will attack character
+        // Deal damage to character
+        this.dealDamageToCharacter(this.randomMonsterDamage())
+        // Before attack reduce monster speed by minimum speed
+        monsterSpeed -= minSpeed
+        // Start next turn after 1 second
+        setTimeout(() => {
+          this.startBattle(characterSpeed, monsterSpeed)
+        }, this.battleSpeed)
       }
     },
     dealDamageToMonster ({ damage, criticalHit, skill }) {
@@ -110,15 +110,15 @@ export default {
         }
         // Check if character made critical hit and display appropriate message based on condition
         if (criticalHit) {
-          this.battleLog.push(`<strong>CHARACTER</strong>: [Skill: ${skill}] <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+          this.battleLog.push(`<strong class="character">${this.returnCharacterName}</strong>: <strong style="color: #ff3636">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)} by skill: ${skill}.`)
         } else {
-          this.battleLog.push(`<strong>CHARACTER</strong>: [Skill: ${skill}] Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)}.`)
+          this.battleLog.push(`<strong class="character">${this.returnCharacterName}</strong>: Damage dealt ${this.lastDealtDamageByCharacter.toFixed(2)} by skill: ${skill}.`)
         }
-        this.battleLog.push(`<strong>CHARACTER</strong>: Earned ${experienceToEarn.toFixed(2)} experience by this hit!`)
+        this.battleLog.push(`<em>Earned ${experienceToEarn.toFixed(2)} experience by this hit!</em>`)
       }
       // If monster doesn't have any HP left show message that character killed monster
       if (!this.returnMonsterHP) {
-        this.battleLog.push('<strong>Successfully killed monster!</strong>')
+        this.battleLog.push('<strong class="win">Successfully did kill monster. Congratz!</strong>')
       }
     },
     dealDamageToCharacter ({ damage, criticalHit }) {
@@ -140,13 +140,13 @@ export default {
         this.battleLog.push('<em>Missed character while trying to hit</em>')
         // Check if monster made critical hit and display appropriate message based on condition
       } else if (criticalHit) {
-        this.battleLog.push(`<strong>MONSTER</strong>: <strong style="color: red">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
+        this.battleLog.push(`<strong class="monster">${this.returnMonsterName}</strong>: <strong style="color: #ff3636">Critical HIT</strong> Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
       } else {
-        this.battleLog.push(`<strong>MONSTER</strong>: Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
+        this.battleLog.push(`<strong class="monster">${this.returnMonsterName}</strong>: Damage dealt ${this.lastDealtDamageByMonster.toFixed(2)}.`)
       }
       // If character doesn't have any HP left show message that monster killed character
       if (!this.returnCharacterHP) {
-        this.battleLog.push('<strong>Successfully killed character!</strong>')
+        this.battleLog.push('<strong class="lose">You are dead. Get stronger before you come again!</strong>')
       }
     },
     reviveMonster () {

@@ -5,22 +5,22 @@
         <div class="character__details">
           <div class="character__details-image" @click="showCharacterInfo = !showCharacterInfo">
             <img src="http://naimg.playthisgame.com/cabal_new/images/classes/blader.jpg" alt="">
-            <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+            <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
               <div v-if="receivedDamage" class="character__dmg" :class="{ criticalHit }">
                 <span v-if="!criticalHit">{{ receivedDamage.toFixed() }}</span>
-                <span v-else class="animated shake">{{ receivedDamage.toFixed() }}</span>
+                <span v-else class="animate__animated animate__headShake">{{ receivedDamage.toFixed() }}</span>
               </div>
             </transition>
           </div>
           <div class="character__details-box">
-            <transition enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
+            <transition enter-active-class="animate__animated animate__fadeInUp" leave-active-class="animate__animated animate__fadeOutDown">
               <div v-if="!showCharacterInfo" class="character__details-stats">
+                <div class="character__details-hp">
+                  <span><i class="icon-heart"><span class="path1" /><span class="path2" /></i><span class="hp-value">{{ returnCharacterHPTotal }}</span></span>
+                </div>
                 <div class="character__details-att-def">
                   <span><i class="icon-sword"><span class="path1" /><span class="path2" /><span class="path3" /><span class="path4" /><span class="path5" /><span class="path6" /><span class="path7" /><span class="path8" /></i><span class="atk-value">{{ returnCharacterAttack.toFixed(2) }}</span></span>
                   <span><i class="icon-shield"><span class="path1" /><span class="path2" /><span class="path3" /><span class="path4" /></i><span class="def-value">{{ returnCharacterDefense.toFixed(2) }}</span></span>
-                </div>
-                <div class="character__details-hp">
-                  <span><i class="icon-heart"><span class="path1" /><span class="path2" /></i><span class="hp-value">{{ returnCharacterHPTotal }}</span></span>
                 </div>
               </div>
             </transition>
@@ -41,16 +41,28 @@
         </div>
         <div class="character__skills">
           <ul>
-            <li v-for="n in 5" :key="n">
-              <img src="https://gamepedia.cursecdn.com/cabal_gamepedia/9/94/Stab_and_Slash_icon.png" alt="">
+            <li v-for="skill in skills" :key="skill.skill">
+              <button
+                type="button"
+                :disabled="!characterTurn || !canUseSkill(skill.skill)"
+                @click="$emit('onSkillAttack', skill.skill)"
+              >
+                <img :src="`/images/character/skills/${skill.skill}.png`" :alt="skill.name">
+                <div
+                  class="cooldown-progress"
+                  :style="{ height: `${returnSkillCooldownPercent(skill.skill)}%` }"
+                />
+              </button>
             </li>
           </ul>
         </div>
       </div>
       <div>
-        Right
+        <button type="button" @click="$emit('onAutoAttack', $event)">
+          Auto attack - {{ autoAttack ? 'On' : 'Off' }}
+        </button>
       </div>
-      <transition enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
+      <transition enter-active-class="animate__animated animate__fadeInUp" leave-active-class="animate__animated animate__fadeOutDown">
         <div v-if="showCharacterInfo" class="character__info">
           <ul>
             <li>
@@ -116,6 +128,21 @@ export default {
     criticalHit: {
       type: Boolean,
       default: false,
+      required: true
+    },
+    characterTurn: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    autoAttack: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    skillCooldown: {
+      type: Object,
+      default: () => ({}),
       required: true
     }
   }
@@ -217,14 +244,18 @@ export default {
       }
     }
     &-att-def {
-      .atk-value, .def-value {
+      .atk-value {
         margin-left: 5px;
         margin-right: 5px;
+      }
+      .def-value {
+        margin-left: 5px;
       }
     }
     &-hp {
       .hp-value {
         margin-left: 5px;
+        margin-right: 5px;
       }
     }
     &-name {
@@ -273,10 +304,33 @@ export default {
         border-radius: var(--radius);
         overflow: hidden;
         margin: 0 2px;
+        button {
+          cursor: pointer;
+          position: relative;
+          margin: 0;
+          padding: 0;
+          display: block;
+          border: none;
+          background-color: transparent;
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
         img {
           display: block;
           width: 40px;
           height: 40px;
+        }
+        .cooldown-progress {
+          width: 100%;
+          background-color: rgba(#848484, 0.75);
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          cursor: not-allowed;
+          transition: height var(--transition) linear;
         }
       }
     }

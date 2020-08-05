@@ -1,0 +1,13 @@
+name: Nipperlug
+image: https://gamepedia.cursecdn.com/cabal_gamepedia/2/2d/Nipper_Lug.gif
+level: 1
+experience: 22
+attack: 1000
+defense: 10
+speed: 120
+HP:
+  total: 1000
+  current: 1000
+critical:
+  rate: 50
+  DMG: 200
