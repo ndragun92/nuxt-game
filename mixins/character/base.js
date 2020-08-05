@@ -1,4 +1,7 @@
+import skills from './skills'
+
 export default {
+  mixins: [skills],
   computed: {
     returnCharacter () {
       return this.character

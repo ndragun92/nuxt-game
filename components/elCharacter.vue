@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import characterMixin from '@/mixins/character'
+import characterBaseMixin from '@/mixins/character/base'
 export default {
-  mixins: [characterMixin],
+  mixins: [characterBaseMixin],
   props: {
     character: {
       type: Object,
