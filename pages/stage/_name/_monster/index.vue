@@ -2,12 +2,8 @@
   <div v-if="!$fetchState.pending" class="battle-ui">
     <div class="battle-ui__background" :style="{ backgroundImage: `url(/images/stages/background/${returnStageName}.jpg)` }" />
     <div class="battle-ui__map">
-      <img :src="`/images/stages/map/${returnStageName}.gif`" :alt="returnStageName">
-      <div class="battle-ui__map-areas">
-        <div v-for="n in 12" :key="n">
-          {{ n }}
-        </div>
-      </div>
+      <img class="stage-name__map" :src="`/images/stages/map/${returnStageName}.gif`" :alt="returnStageName">
+      <el-map :monsters="monsters" :stage-name="returnStageName" :current-stage="returnMonsterName" />
     </div>
     <div class="battle-ui__wrapper">
       <div class="battle-ui__container">
@@ -62,10 +58,12 @@ export default {
     console.log('MONSTER FETCH')
     this.experienceTable = (await this.$content('settings/experience').fetch()).table
     this.character = await this.$content('character').fetch()
-    this.monster = await this.$content(`monsters/${this.returnStageName}/${this.$route.params.monster}`).fetch()
+    this.monsters = await this.$content(`monsters/${this.returnStageName}`).sortBy('field', 'asc').fetch()
+    this.monster = await this.$content(`monsters/${this.returnStageName}/${this.returnMonsterName}`).fetch()
     this.availableExperienceToEarn = this.returnMonsterExperience
   },
   data: () => ({
+    monsters: [],
     monster: {},
     character: {},
     experienceTable: [],
@@ -74,6 +72,9 @@ export default {
   computed: {
     returnStageName () {
       return this.$route.params.name
+    },
+    returnMonsterName () {
+      return this.$route.params.monster
     }
   }
 }
@@ -101,20 +102,6 @@ export default {
       display: block;
       width: 400px;
       height: 400px;
-    }
-    &-areas {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      background-color: rgba(red, 0.25);
-      & > div {
-        border: 1px solid red;
-      }
     }
   }
   &__wrapper {

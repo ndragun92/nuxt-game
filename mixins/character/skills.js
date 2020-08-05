@@ -7,6 +7,7 @@ export default {
         type: 'attack',
         amp: 5,
         attack: 64,
+        criticalDMG: 15,
         cooldown: 0
       },
       {
@@ -15,6 +16,7 @@ export default {
         type: 'attack',
         amp: 55,
         attack: 938,
+        criticalDMG: 25,
         cooldown: 3
       },
       {
@@ -23,6 +25,7 @@ export default {
         type: 'attack',
         amp: 61,
         attack: 1586,
+        criticalDMG: 20,
         cooldown: 5
       },
       {
@@ -31,6 +34,7 @@ export default {
         type: 'attack',
         amp: 66,
         attack: 2015,
+        criticalDMG: 25,
         cooldown: 7
       },
       {
@@ -39,6 +43,7 @@ export default {
         type: 'attack',
         amp: 75,
         attack: 2288,
+        criticalDMG: 25,
         cooldown: 9
       }
     ]

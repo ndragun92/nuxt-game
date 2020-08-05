@@ -171,6 +171,9 @@ export default {
         Object.assign(this.skillCooldown, {
           [skill.skill]: skill.cooldown + 1
         })
+        if (criticalHit) {
+          finalDmg = finalDmg + (finalDmg * skill.criticalDMG / 100)
+        }
       }
       // Return damage and state of critical hit
       return {

@@ -2,30 +2,18 @@
   <div class="stage-name">
     <div class="stage-name__background" :style="{ backgroundImage: `url(/images/stages/map/${returnStageName}.gif)` }" />
     <div class="stage-name__wrapper">
-      <img class="stage-name__map" :src="`/images/stages/map/${returnStageName}.gif`" alt="">
+      <img class="stage-name__map" :src="`/images/stages/map/${returnStageName}.gif`" :alt="returnNormalName">
       <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
         <div v-if="showMonsterImage" class="stage-name__monster-image">
           <img :src="`/images/monsters/${returnStageName}/${showMonsterImage}.gif`" alt="">
         </div>
       </transition>
-      <div class="stage-name__map-areas">
-        <div
-          v-for="monster in monsters"
-          :key="monster.slug"
-          @mouseenter="showMonsterImage = monster.slug"
-          @mouseleave="showMonsterImage = null"
-          @click="$router.push(`/stage/${returnStageName}/${monster.slug}`)"
-        >
-          <div>
-            <h6>
-              {{ monster.stage }}. Stage
-            </h6>
-            <h2>
-              {{ monster.name }}
-            </h2>
-          </div>
-        </div>
-      </div>
+      <el-map
+        :monsters="monsters"
+        :stage-name="returnStageName"
+        @onShow="showMonsterImage = $event"
+        @onClose="showMonsterImage = null"
+      />
       <h1 class="stage-name__title">
         {{ returnNormalName }}
       </h1>
@@ -89,51 +77,6 @@ export default {
     height: 400px;
     display: block;
     object-fit: cover;
-    &-areas {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      background-color: rgba(var(--dark-primary-color-rgb), 0.25);
-      & > div {
-        position: relative;
-        border: 1px dashed var(--error-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        transition: background-color var(--transition) linear;
-        img {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-        }
-        &:hover {
-          background-color: rgba(var(--error-color-rgb), 0.65);
-        }
-        h6 {
-          position: relative;
-          z-index: 1;
-          margin: 0 0 5px 0;
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--light-text-primary-color);
-        }
-        h2 {
-          position: relative;
-          margin: 5px 0 0 0;
-          font-weight: 600;
-          color: var(--light-text-primary-color);
-          font-size: 12px;
-        }
-      }
-    }
   }
   &__monster-image {
     position: absolute;
