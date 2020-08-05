@@ -1,5 +1,6 @@
-name: Nipperlug
-image: https://gamepedia.cursecdn.com/cabal_gamepedia/2/2d/Nipper_Lug.gif
+name: Hound Zombie
+stage: 9
+field: 12
 level: 1
 experience: 22
 attack: 1000

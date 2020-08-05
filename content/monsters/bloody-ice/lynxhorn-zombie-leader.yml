@@ -1,0 +1,14 @@
+name: Lynxhorn Zombie Leader
+stage: 5
+field: 1
+level: 20
+experience: 500
+attack: 50
+defense: 100
+speed: 50
+HP:
+  total: 436
+  current: 436
+critical:
+  rate: 10
+  DMG: 50

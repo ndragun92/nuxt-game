@@ -5,7 +5,7 @@
     </h2>
     <div class="monster__image">
       <div class="monster__image-container">
-        <img :src="returnMonsterImage" :alt="returnMonsterName">
+        <img :src="`/images/monsters/${stageName}/${returnMonsterImage}.gif`" :alt="returnMonsterName">
         <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
           <div v-if="receivedDamage" class="monster__dmg" :class="{ criticalHit }">
             <span v-if="!criticalHit">{{ receivedDamage.toFixed() }}</span>
@@ -58,6 +58,11 @@ export default {
     criticalHit: {
       type: Boolean,
       default: false,
+      required: true
+    },
+    stageName: {
+      type: String,
+      default: '',
       required: true
     }
   }

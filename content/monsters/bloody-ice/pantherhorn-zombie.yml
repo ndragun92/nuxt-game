@@ -1,0 +1,14 @@
+name: Pantherhorn Zombie
+stage: 10
+field: 3
+level: 10
+experience: 650
+attack: 1000
+defense: 100
+speed: 139
+HP:
+  total: 15000
+  current: 15000
+critical:
+  rate: 50
+  DMG: 200

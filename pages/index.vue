@@ -1,12 +1,9 @@
 <template>
   <div>
-    <nuxt-link to="/battle">
-      Battle
-    </nuxt-link>
     <ul>
-      <li v-for="monster in monsters" :key="monster.slug">
-        <nuxt-link :to="`/battle/${monster.slug}`">
-          <img :src="monster.image" :alt="monster.name" width="50" height="50"> {{ monster.name }}
+      <li v-for="stage in stages" :key="stage.slug">
+        <nuxt-link :to="`/stage/${stage.slug}`">
+          <img :src="`/images/stages/${stage.slug}.gif`" :alt="stage.name" width="50" height="50"> {{ stage.name }}
         </nuxt-link>
       </li>
     </ul>
@@ -16,10 +13,10 @@
 <script>
 export default {
   async fetch () {
-    this.monsters = await this.$content('monsters').fetch()
+    this.stages = await this.$content('stages').sortBy('stage', 'asc').fetch()
   },
   data: () => ({
-    monsters: []
+    stages: []
   })
 }
 </script>

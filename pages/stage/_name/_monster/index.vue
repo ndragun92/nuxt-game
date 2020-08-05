@@ -1,8 +1,13 @@
 <template>
   <div v-if="!$fetchState.pending" class="battle-ui">
-    <div class="battle-ui__background" />
+    <div class="battle-ui__background" :style="{ backgroundImage: `url(/images/stages/background/${returnStageName}.jpg)` }" />
     <div class="battle-ui__map">
-      <img src="https://gamepedia.cursecdn.com/cabal_gamepedia/4/45/MapBG01.gif?version=e0e5ffc606b732d78be1b009924866b4" alt="">
+      <img :src="`/images/stages/map/${returnStageName}.gif`" :alt="returnStageName">
+      <div class="battle-ui__map-areas">
+        <div v-for="n in 12" :key="n">
+          {{ n }}
+        </div>
+      </div>
     </div>
     <div class="battle-ui__wrapper">
       <div class="battle-ui__container">
@@ -10,6 +15,7 @@
           :monster="returnMonster"
           :received-damage="lastDealtDamageByCharacter"
           :critical-hit="lastDealtDamageCriticalHit"
+          :stage-name="returnStageName"
         />
         <div class="logs">
           <h6>Battle logs:</h6>
@@ -53,9 +59,10 @@ import characterBaseMixin from '@/mixins/character/base'
 export default {
   mixins: [battleMixing, monsterMixin, characterBaseMixin],
   async fetch () {
+    console.log('MONSTER FETCH')
     this.experienceTable = (await this.$content('settings/experience').fetch()).table
     this.character = await this.$content('character').fetch()
-    this.monster = await this.$content(`monsters/${this.$route.params.monster}`).fetch()
+    this.monster = await this.$content(`monsters/${this.returnStageName}/${this.$route.params.monster}`).fetch()
     this.availableExperienceToEarn = this.returnMonsterExperience
   },
   data: () => ({
@@ -63,7 +70,12 @@ export default {
     character: {},
     experienceTable: [],
     availableExperienceToEarn: 0
-  })
+  }),
+  computed: {
+    returnStageName () {
+      return this.$route.params.name
+    }
+  }
 }
 </script>
 
@@ -72,7 +84,6 @@ export default {
   height: 100vh;
   background-color: var(--dark-primary-color);
   &__background {
-    background-image: url("https://cabalph.playpark.com/main/wp-content/uploads/2017/05/BloodyIce3.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     position: absolute;
@@ -90,6 +101,20 @@ export default {
       display: block;
       width: 400px;
       height: 400px;
+    }
+    &-areas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      background-color: rgba(red, 0.25);
+      & > div {
+        border: 1px solid red;
+      }
     }
   }
   &__wrapper {

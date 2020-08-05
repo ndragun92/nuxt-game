@@ -7,7 +7,7 @@ export default {
       return this.returnMonster.name
     },
     returnMonsterImage () {
-      return this.returnMonster.image
+      return this.returnMonster.slug
     },
     returnMonsterLevel () {
       return this.returnMonster.level
