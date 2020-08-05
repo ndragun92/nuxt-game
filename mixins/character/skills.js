@@ -53,7 +53,6 @@ export default {
       const { characterSpeed, monsterSpeed } = this.saveTempSpeed
       const skill = this.skills.find(obj => obj.skill === skillName)
       if (this.canUseSkill(skillName)) {
-        alert(`Used: ${skill.name}`)
         this.dealDamageToMonster(this.randomCharacterDamage(skill))
         this.startBattle(characterSpeed, monsterSpeed)
       } else {
