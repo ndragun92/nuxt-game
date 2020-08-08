@@ -3,14 +3,17 @@
     <div
       v-for="monster in monsters"
       :key="monster.slug"
-      :class="{active: currentStage && currentStage === monster.slug}"
+      :class="{
+        active: currentStage && currentStage === monster.slug,
+        completed: returnCurrentStageIndex > monster.stage
+      }"
       @mouseenter="$emit('onShow', monster.slug)"
       @mouseleave="$emit('onClose')"
       @click="$router.push(`/stage/${stageName}/${monster.slug}`)"
     >
       <div v-if="currentStage ? currentStage === monster.slug : true">
         <h6>
-          {{ monster.stage }}. Stage
+          {{ monster.stage }}. Stage {{ returnCurrentStageIndex }}
         </h6>
         <h2>
           {{ monster.name }}
@@ -37,6 +40,14 @@ export default {
       type: String,
       default: null
     }
+  },
+  computed: {
+    returnCurrentStageIndex () {
+      if (this.currentStage) {
+        return this.monsters.find(obj => obj.slug === this.currentStage).stage
+      }
+      return null
+    }
   }
 }
 </script>
@@ -57,6 +68,18 @@ export default {
       & > div {
         &:not(.active) {
           background-color: rgba(var(--dark-primary-color-rgb), 0.9);
+        }
+        &.completed {
+          background-color:  rgba(var(--success-color-rgb), 0.8);
+          &:after {
+            content: 'Completed';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+          }
         }
       }
     }

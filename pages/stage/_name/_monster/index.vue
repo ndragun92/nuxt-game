@@ -7,7 +7,7 @@
     </div>
     <div class="battle-ui__wrapper">
       <div class="battle-ui__container">
-        <el-monster-2
+        <el-monster
           :monster="returnMonster"
           :received-damage="lastDealtDamageByCharacter"
           :critical-hit="lastDealtDamageCriticalHit"
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <el-character-2
+    <el-character
       :character="returnCharacter"
       :experience-table="experienceTable"
       :received-damage="lastDealtDamageByMonster"
